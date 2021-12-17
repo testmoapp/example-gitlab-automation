@@ -1,0 +1,39 @@
+default:
+  image: node:16
+
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - npm ci --cache .npm --prefer-offline
+    - npm install --cache .npm --prefer-offline --no-save @testmo/testmo-cli
+
+    # Optionally add a couple of fields such as the git hash and link to the build
+    - npx testmo automation:resources:add-field --name git --type string
+        --value $CI_COMMIT_SHORT_SHA --resources resources.json
+    - npx testmo automation:resources:add-link --name build
+        --url $CI_PIPELINE_URL --resources resources.json
+
+    - npx testmo automation:run:submit
+        --instance $TESTMO_URL
+        --project-id 1
+        --name "Mocha test run"
+        --source "unit-tests"
+        --resources resources.json
+        --results results/*.xml
+        -- npm run mocha-junit # Note space after --
+
+  cache:
+    - key:
+        files:
+          - package-lock.json
+      paths:
+        - .npm/
+
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - results/mocha-test-results.xml
