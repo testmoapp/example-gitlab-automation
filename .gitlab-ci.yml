@@ -1,5 +1,5 @@
 default:
-  image: node:16
+  image: node:19
 
 stages:
   - test
@@ -17,7 +17,7 @@ test:
         --url $CI_PIPELINE_URL --resources resources.json
 
     - npx testmo automation:run:submit
-        --instance $TESTMO_URL
+        --instance "$TESTMO_URL"
         --project-id 1
         --name "Mocha test run"
         --source "unit-tests"
