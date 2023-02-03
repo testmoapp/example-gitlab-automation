@@ -7,7 +7,10 @@ stages:
 test:
   stage: test
   script:
+    # Skip this line if not installing your own Node.js packages
     - npm ci --cache .npm --prefer-offline
+
+    # Install Testmo CLI tool locally (then use npx testmo .. to run it)
     - npm install --cache .npm --prefer-offline --no-save @testmo/testmo-cli
 
     # Optionally add a couple of fields such as the git hash and link to the build
